@@ -1,0 +1,43 @@
+# Génération de la liste des fichiers objets▲
+# 
+# Plutôt que d'énumérer la liste des fichiers objets dans les dépendances de la
+# règle de construction de notre exécutable, il est possible de la générer
+# automatiquement à partir de la liste des fichiers sources. Pour cela nous
+# rajoutons deux variables au Makefile :
+# 
+# SRC qui contient la liste des fichiers sources du projet.
+# OBJ pour la liste des fichiers objets.
+# La variable OBJ est remplie à partir de SRC de la manière suivante:
+#									OBJ= $(SRC:.c=.o)
+
+CC=gcc
+CFLAGS=-W -Wall -ansi -pedantic
+LDFLAGS=
+EXEC=hello
+
+SRC= hello.c main.c
+# Construction de la liste des fichiers sources
+# on peut utiliser un moyen plus rapide pour les fichies sources en utlisant la
+# notation wildcard suivante:
+#			SRC=$(wildcard *.c)
+OBJ= $(SRC:.c=.o)
+
+all: $(EXEC)
+
+hello: hello.o main.o
+	@$(CC) -o $@ $^ $(LDFLAGS)
+	# On a ajouté le symbole @ pour désactiver l'echo des lignes de commandes
+	# Mode silencieux
+
+main.o: hello.h
+
+%.o: %.c
+	@$(CC) -o $@ -c $< $(CFLAGS)
+
+.PHONY: clean mrproper
+
+clean:
+	@rm -rf *.o
+	
+mrproper: clean
+	@rm -rf $(EXEC)

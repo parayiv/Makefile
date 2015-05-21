@@ -1,0 +1,25 @@
+# Regle d'inférence 
+# creer un fichier .o a partic d'un fichier .c
+# 	%.o: %.c
+#				commands
+CC=gcc
+CFLAGS=-W -Wall -ansi -pedantic
+LDFLAGS=
+EXEC=hello
+
+all: $(EXEC)
+
+hello: hello.o main.o
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+# We add the line below when we face troubles
+# main.o: hello.h
+
+%.o: %.c
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+clean:
+	rm -rf *.o
+	
+mrproper: clean
+	rm -rf $(EXEC)

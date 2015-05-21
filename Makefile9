@@ -1,0 +1,45 @@
+# Les Makefiles conditionnels▲
+# 
+# Les Makefiles nous offrent en plus une certaine souplesse en introduisant des
+# directives, assez proches des directives de compilation du C, qui permettent
+# d'exécuter conditionnellement une partie du Makefile en fonction de l'existence
+# d'une variable, de sa valeur, etc.
+# Supposons, par exemple, que nous souhaitions compiler notre projet tantôt en
+# mode debug, tantôt en mode release sans avoir à modifier plusieurs lignes du
+# Makefile pour passer d'un mode à l'autre. Il suffit de créer une variable DEBUG
+# et tester sa valeur pour changer de mode :
+DEBUG=yes
+CC=gcc
+ifeq ($(DEBUG),yes)
+	CFLAGS=-W -Wall -ansi -pedantic -g
+	LDFLAGS=
+else
+	CFLAGS=-W -Wall -ansi -pedantic
+	LDFLAGS=
+endif
+EXEC=hello
+SRC= $(wildcard *.c)
+OBJ= $(SRC:.c=.o)
+
+all: $(EXEC)
+ifeq ($(DEBUG),yes)
+	@echo "Génération en mode debug"
+else
+	@echo "Génération en mode release"
+endif
+
+hello: $(OBJ)
+	@$(CC) -o $@ $^ $(LDFLAGS)
+
+main.o: hello.h
+
+%.o: %.c
+	@$(CC) -o $@ -c $< $(CFLAGS)
+
+.PHONY: clean mrproper
+
+clean:
+	@rm -rf *.o
+	
+mrproper: clean
+	@rm -rf $(EXEC)

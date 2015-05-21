@@ -1,0 +1,30 @@
+# La cible .PHONY
+# Dans l'exemple présent, clean est la cible d'une règle ne présentant aucune
+# dépendance. Supposons que clean soit également le nom d'un fichier présent dans
+# le répertoire courant, il serait alors forcément plus récent que ses dépendances
+# et la règle ne serait alors jamais exécutée.
+# Pour pallier ce problème, il existe une cible particulière nommée .PHONY dont
+# les dépendances seront systématiquement reconstruites.
+CC=gcc
+CFLAGS=-W -Wall -ansi -pedantic
+LDFLAGS=
+EXEC=hello
+
+all: $(EXEC)
+
+hello: hello.o main.o
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+# We add the line below when we face troubles
+# main.o: hello.h
+
+%.o: %.c
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+.PHONY: clean mrproper
+
+clean:
+	rm -rf *.o
+	
+mrproper: clean
+	rm -rf $(EXEC)
